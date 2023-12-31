@@ -15,7 +15,7 @@ PPO_path = os.path.join('Training', 'Saved_models')
 
 
 env = reachTargetGameEnv()
-model = PPO('MlpPolicy', env, verbose=1, tensorboard_log = Log_path, ent_coef=0.01)
+model = PPO('MlpPolicy', env, verbose=1, tensorboard_log = Log_path, ent_coef=0.07)
 
 
 stop_callback = StopTrainingOnRewardThreshold(reward_threshold=180, verbose=1)
@@ -25,11 +25,11 @@ eval_callback = EvalCallback(env,
                              verbose=1)
 
 env.render_mode = None
-model.learn(total_timesteps=2000000) 
+model.learn(total_timesteps=50000) 
 
 env.close()
 
 env.render_mode = 'human'
-model.learn(total_timesteps=10000)
+model.learn(total_timesteps=1000)
 
 model.save(PPO_path)

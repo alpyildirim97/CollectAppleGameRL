@@ -14,7 +14,7 @@ import numpy as np
 from stable_baselines3 import PPO
 
 
-WIDTH, HEIGHT = 300, 300
+WIDTH, HEIGHT = 630, 480
 ROW, COLUMN = 21, 16
 FPS = 30
 COLOR = (255, 100, 98) 
@@ -88,7 +88,7 @@ class reachTargetGameEnv(gym.Env):
     def __init__(self):
         self.render_mode = None
         self.action_space = spaces.Discrete(4)
-        self.observation_space = spaces.Box(low=0, high=300, shape=(4,), dtype=np.float32)    
+        self.observation_space = spaces.Box(low=0, high=WIDTH, shape=(4,), dtype=np.float32)    
     
     
     def step(self, action):
@@ -103,13 +103,13 @@ class reachTargetGameEnv(gym.Env):
   
         
         if action == 0:
-           self.human.moveUp(10)
+           self.human.moveUp(20)
         elif action == 1:
-            self.human.moveDown(10)
+            self.human.moveDown(20)
         elif action == 2:
-            self.human.moveRight(10)
+            self.human.moveRight(20)
         elif action == 3:
-            self.human.moveLeft(10)
+            self.human.moveLeft(20)
                      
         self.observation = [self.human.rect.x, self.human.rect.y, self.apple.rect.x, self.apple.rect.y]
         self.observation = np.array(self.observation)    
@@ -125,13 +125,10 @@ class reachTargetGameEnv(gym.Env):
             reward_a = 0
             
         if self.prev_score < self.score:
-            reward_b = 10
+            reward_b = 10 * self.score
             self.prev_score = self.score
-            self.timestep_passed_eating = 0
-            self.valid_timestep_to_eat += 1
         else:
             reward_b = 0
-            self.timestep_passed_eating += 1
             
             
         self.dist = abs(self.human.rect.x - self.apple.rect.x) + abs(self.human.rect.y - self.apple.rect.y)
@@ -142,17 +139,15 @@ class reachTargetGameEnv(gym.Env):
         else:
             reward_c = 0
         self.prev_dist = self.dist
-        
-        reward_d = -self.timestep_passed_eating // self.valid_timestep_to_eat
-        
+               
         if self.human.punishMe:
-            reward_e = -2
+            reward_e = -3
             self.human.punishMe = False
         else:
             reward_e = 0
             
             
-        self.reward = reward_a + reward_b + reward_c + reward_d + reward_e
+        self.reward = reward_a + reward_b + reward_c  + reward_e
         
         self.info = {}
         
@@ -181,8 +176,7 @@ class reachTargetGameEnv(gym.Env):
         
         self.dist = abs(self.human.rect.x - self.apple.rect.x) + abs(self.human.rect.y - self.apple.rect.y)
         self.prev_dist = self.dist
-        self.valid_timestep_to_eat = ROW + COLUMN + 5
-        self.timestep_passed_eating = 0
+
         
         
         if self.render_mode == 'human':

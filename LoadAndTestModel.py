@@ -19,6 +19,8 @@ env = reachTargetGameEnv()
 model = PPO.load(PPO_path, env=env)
 
 env.render_mode = 'human'
-model.learn(total_timesteps=10000)
+model.learn(total_timesteps=1000)
+
+model.save(PPO_path)
 
 env.close()
